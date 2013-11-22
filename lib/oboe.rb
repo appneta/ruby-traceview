@@ -5,6 +5,7 @@ begin
   require 'oboe/version'
   require 'oboe/logger'
   require 'oboe/util'
+  require 'oboe/xtrace'
   require 'base.rb'
   
   # If Oboe_metal is already defined then we are in a PaaS environment

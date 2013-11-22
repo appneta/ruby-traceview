@@ -1,4 +1,8 @@
-# oboe 2.3.3 (11/06/13)
+# oboe 2.3.4 (11/21/13)
+
+* Stacks that use a caching system like Varnish could see corrupted traces; fixed. 
+
+# oboe 2.3.3.7 (11/06/13)
 
 * Rename the _Init layer to "rack"
 * Decode URLS when reporting them

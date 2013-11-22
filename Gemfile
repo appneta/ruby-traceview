@@ -4,13 +4,19 @@ source 'https://rubygems.org'
 gemspec :name => 'oboe'
 
 gem 'rake'
-gem 'appraisal'
 
 group :development, :test do
   gem 'minitest'
   gem 'minitest-reporters'
-  gem 'debugger' unless (RUBY_VERSION =~ /^1.8/) == 0
   gem 'rack-test'
+  gem 'appraisal'
+end
+
+group :development do
+  gem 'ruby-debug',   :platform => :mri_18
+  gem 'ruby-debug19', :platform => :mri_19, :require => 'ruby-debug'
+  gem 'debugger',     :platform => :mri_20 
+  gem 'perftools.rb', :platform => :mri,    :require => 'perftools'
 end
 
 # Instrumented gems

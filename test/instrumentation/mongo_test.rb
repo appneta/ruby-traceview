@@ -283,7 +283,7 @@ describe Oboe::Inst::Mongo do
     traces[1]['Collection'].must_equal "testCollection"
     traces[1].has_key?('Backtrace').must_equal Oboe::Config[:mongo][:collect_backtraces]
     traces[1]['QueryOp'].must_equal "find"
-    traces[1]['Query'].must_equal "{\"name\":\"MyName\",\"limit\":1}"
+    traces[1].has_key?('Query').must_equal true
     traces[1]['Limit'].must_equal "1"
   end
   
