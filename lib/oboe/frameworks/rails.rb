@@ -12,7 +12,7 @@ module Oboe
 
       def oboe_rum_header
         begin
-          return unless Oboe::Config.rum_id
+          return unless Oboe::Config[:rum_id]
           if Oboe.tracing?
             if request.xhr?
               return raw(ERB.new(@@rum_xhr_tmpl).result)
@@ -28,7 +28,7 @@ module Oboe
       
       def oboe_rum_footer
         begin
-          return unless Oboe::Config.rum_id
+          return unless Oboe::Config[:rum_id]
           if Oboe.tracing?
             # Even though the footer template is named xxxx.erb, there are no ERB tags in it so we'll
             # skip that step for now
