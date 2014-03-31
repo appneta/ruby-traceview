@@ -6,7 +6,7 @@ require 'oboe/inst/rack'
 Oboe::Config[:tracing_mode] = 'always'
 Oboe::Config[:sample_rate] = 1e6
     
-class RackTestApp < MiniTest::Unit::TestCase
+class RackTestApp < Minitest::Test
   include Rack::Test::Methods
 
   def app
@@ -50,6 +50,17 @@ class RackTestApp < MiniTest::Unit::TestCase
 
     assert last_response.ok?
     assert last_response['X-Trace']
+  end
+  
+  def test_dont_trace_static_assets
+    clear_all_traces 
+
+    get "/assets/static_asset.png"
+
+    traces = get_all_traces
+    assert traces.empty?
+
+    assert last_response.status == 404
   end
 end
 

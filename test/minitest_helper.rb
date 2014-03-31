@@ -7,6 +7,8 @@ ENV["RACK_ENV"] = "test"
 # not defined under Ruby 1.8.7 and 1.9.3
 RUBY_ENGINE = "ruby" unless defined?(RUBY_ENGINE)
 
+Minitest::Spec.new 'pry'
+
 unless RUBY_VERSION =~ /^1.8/
   MiniTest::Reporters.use! MiniTest::Reporters::SpecReporter.new
 end
