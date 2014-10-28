@@ -1,5 +1,6 @@
 # Welcome to the TraceView Ruby Gem
 ## AKA The oboe gem
+[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/appneta/oboe-ruby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 The oboe gem provides AppNeta [TraceView](http://www.appneta.com/application-performance-management/) instrumentation for Ruby.
 
