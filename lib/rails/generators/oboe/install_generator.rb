@@ -14,7 +14,7 @@ module Oboe
 
       print_header
 
-      while true do
+      loop do
         print_body
 
         user_tracing_mode = ask shell.set_color "* Tracing Mode? [through]:", :yellow

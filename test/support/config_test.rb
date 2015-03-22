@@ -9,7 +9,7 @@ describe Oboe::Config do
 
   it 'should have the correct default values' do
     # Reset Oboe::Config to defaults
-    Oboe::Config.initialize
+    Oboe::Config.setup
 
     Oboe::Config[:verbose].must_equal false
     Oboe::Config[:tracing_mode].must_equal "through"
@@ -18,7 +18,7 @@ describe Oboe::Config do
 
   it 'should have the correct instrumentation defaults' do
     # Reset Oboe::Config to defaults
-    Oboe::Config.initialize
+    Oboe::Config.setup
 
     instrumentation = Oboe::Config.instrumentation_list
 

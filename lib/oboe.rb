@@ -39,6 +39,7 @@ begin
 
   if Oboe.loaded
     require 'oboe/method_profiling'
+    require 'oboe/collector'
     require 'oboe/instrumentation'
 
     # Frameworks

@@ -1,13 +1,13 @@
-require "minitest/spec"
-require "minitest/autorun"
-require "minitest/reporters"
+require 'minitest/spec'
+require 'minitest/autorun'
+require 'minitest/reporters'
 
-ENV["RACK_ENV"] = "test"
-ENV["OBOE_GEM_TEST"] = "true"
+ENV['RACK_ENV'] = 'test'
+ENV['OBOE_GEM_TEST'] = 'true'
 
 # FIXME: Temp hack to fix padrino-core calling RUBY_ENGINE when it's
 # not defined under Ruby 1.8.7 and 1.9.3
-RUBY_ENGINE = "ruby" unless defined?(RUBY_ENGINE)
+RUBY_ENGINE = 'ruby' unless defined?(RUBY_ENGINE)
 
 Minitest::Spec.new 'pry'
 
@@ -16,8 +16,11 @@ unless RUBY_VERSION =~ /^1.8/
 end
 
 if defined?(JRUBY_VERSION)
-  ENV['JAVA_OPTS'] = "-J-javaagent:/usr/local/tracelytics/tracelyticsagent.jar"
+  ENV['JAVA_OPTS'] = '-J-javaagent:/usr/local/tracelytics/tracelyticsagent.jar'
 end
+
+# Enabled GC ahead of time for GC metrics tests
+GC::Profiler.enable if RUBY_VERSION >= '1.9.3'
 
 require 'rubygems'
 require 'bundler'
@@ -27,12 +30,12 @@ require 'memcache'
 
 Bundler.require(:default, :test)
 
-@trace_dir = "/tmp/"
-$trace_file = @trace_dir + "trace_output.bson"
+@trace_dir = '/tmp/'
+$trace_file = @trace_dir + 'trace_output.bson'
 
 # Configure Oboe
 Oboe::Config[:verbose] = true
-Oboe::Config[:tracing_mode] = "always"
+Oboe::Config[:tracing_mode] = 'always'
 Oboe::Config[:sample_rate] = 1000000
 Oboe.logger.level = Logger::DEBUG
 

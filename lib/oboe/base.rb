@@ -30,7 +30,9 @@ module OboeBase
   extend ::Oboe::ThreadLocal
 
   attr_accessor :reporter
+  attr_accessor :collector
   attr_accessor :loaded
+
   thread_local :sample_source
   thread_local :sample_rate
   thread_local :layer
