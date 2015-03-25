@@ -3,8 +3,8 @@
 
 begin
   require 'oboe/version'
-  require 'oboe/thread_local'
   require 'oboe/logger'
+  require 'oboe/thread_local'
   require 'oboe/util'
   require 'oboe/xtrace'
   require 'oboe/support'

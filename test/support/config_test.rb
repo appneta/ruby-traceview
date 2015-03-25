@@ -23,7 +23,7 @@ describe Oboe::Config do
     instrumentation = Oboe::Config.instrumentation_list
 
     # Verify the number of individual instrumentations
-    instrumentation.count.must_equal 18
+    instrumentation.count.must_equal 19
 
     Oboe::Config[:action_controller][:enabled].must_equal true
     Oboe::Config[:action_view][:enabled].must_equal true

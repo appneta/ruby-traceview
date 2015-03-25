@@ -25,7 +25,7 @@ module Oboe
 end
 
 if defined?(::Moped) && Oboe::Config[:moped][:enabled]
-  Oboe.logger.info '[oboe/loading] Instrumenting moped' if Oboe::Config[:verbose]
+  Oboe.logger.info "[oboe/loading] Instrumenting moped"
 
   if defined?(::Moped::Database)
     module ::Moped

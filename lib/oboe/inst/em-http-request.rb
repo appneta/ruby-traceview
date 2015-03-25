@@ -72,7 +72,7 @@ end
 
 if RUBY_VERSION >= '1.9'
   if defined?(::EventMachine::HttpConnection) && defined?(::EventMachine::HttpClient) && Oboe::Config[:em_http_request][:enabled]
-    Oboe.logger.info '[oboe/loading] Instrumenting em-http-request' if Oboe::Config[:verbose]
+    Oboe.logger.info "[oboe/loading] Instrumenting em-http-request"
 
     class ::EventMachine::HttpConnection
       include Oboe::Inst::EventMachine::HttpConnection

@@ -147,7 +147,7 @@ module Oboe
 end
 
 if defined?(::Resque)
-  Oboe.logger.info '[oboe/loading] Instrumenting resque' if Oboe::Config[:verbose]
+  Oboe.logger.info "[oboe/loading] Instrumenting resque"
 
   ::Resque.module_eval do
     include Oboe::Inst::Resque
@@ -156,7 +156,7 @@ if defined?(::Resque)
       if method_defined?(m)
         module_eval "alias #{m}_without_oboe #{m}"
         module_eval "alias #{m} #{m}_with_oboe"
-      elsif Oboe::Config[:verbose]
+      else
         Oboe.logger.warn "[oboe/loading] Couldn't properly instrument Resque (#{m}).  Partial traces may occur."
       end
     end

@@ -23,7 +23,7 @@ module Oboe
 end
 
 if defined?(::Mongo) && Oboe::Config[:mongo][:enabled]
-  Oboe.logger.info '[oboe/loading] Instrumenting mongo' if Oboe::Config[:verbose]
+  Oboe.logger.info "[oboe/loading] Instrumenting mongo"
 
   if defined?(::Mongo::DB)
     module ::Mongo

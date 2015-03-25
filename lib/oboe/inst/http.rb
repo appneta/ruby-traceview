@@ -70,6 +70,6 @@ if Oboe::Config[:nethttp][:enabled]
     alias request_without_oboe request
     alias request request_with_oboe
 
-    Oboe.logger.info '[oboe/loading] Instrumenting net/http' if Oboe::Config[:verbose]
+    Oboe.logger.info "[oboe/loading] Instrumenting net/http"
   end
 end
