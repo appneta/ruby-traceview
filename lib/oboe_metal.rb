@@ -21,7 +21,7 @@ module TraceView
         return unless TraceView.loaded
 
         begin
-          Oboe_metal::Context.init
+          Oboe_metal::Context.init(ENV['TRACEVIEW_CUUID'].to_s)
 
           if ENV.key?('TRACEVIEW_GEM_TEST')
             TraceView.reporter = TraceView::FileReporter.new(TRACE_FILE)

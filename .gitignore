@@ -8,6 +8,9 @@ lib/oboe_metal.so
 ext/oboe_metal/Makefile
 ext/oboe_metal/mkmf.log
 ext/oboe_metal/oboe_metal.so
-ext/oboe_metal/oboe_wrap.o
+ext/oboe_metal/oboe_noop.so
+ext/oboe_metal/*.o
+ext/oboe_metal/lib/liboboe.so
+ext/oboe_metal/lib/liboboe-1.0.so.1
 log/
 .vagrant

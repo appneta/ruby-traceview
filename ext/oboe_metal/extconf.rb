@@ -4,24 +4,22 @@
 require 'mkmf'
 require 'rbconfig'
 
+ext_dir = File.expand_path(File.dirname(__FILE__))
+
 # Check if we're running in JRuby
 jruby = defined?(JRUBY_VERSION) ? true : false
 
-openshift = ENV.key?('OPENSHIFT_TRACEVIEW_DIR')
-
-# When on OpenShift, set the mkmf lib paths so we have no issues linking to
+# Set the mkmf lib paths so we have no issues linking to
 # the TraceView libs.
-if openshift
-  tv_lib64 = "#{ENV['OPENSHIFT_TRACEVIEW_DIR']}usr/lib64"
-  tv_tlyzer = "#{ENV['OPENSHIFT_TRACEVIEW_DIR']}usr/lib64/tracelyzer"
+tv_lib = File.join(ext_dir, 'lib')
+tv_include = File.join(ext_dir, 'src')
 
-  idefault = "#{ENV['OPENSHIFT_TRACEVIEW_DIR']}usr/include"
-  ldefault = "#{tv_lib64}:#{tv_tlyzer}"
+# Create symlinks for the TraceView library
+target = File.join(tv_lib, 'liboboe-1.0.so.1.6.0')
+File.symlink(target, File.join(tv_lib, 'liboboe.so'))
+File.symlink(target, File.join(tv_lib, 'liboboe-1.0.so.1'))
 
-  dir_config('oboe', idefault, ldefault)
-else
-  dir_config('oboe')
-end
+dir_config('oboe', tv_include, tv_lib)
 
 if jruby || ENV.key?('TRACEVIEW_URL')
   # Build the noop extension under JRuby and Heroku.
@@ -30,7 +28,7 @@ if jruby || ENV.key?('TRACEVIEW_URL')
   # FIXME: For JRuby we need to remove the c extension entirely
   create_makefile('oboe_noop', 'noop')
 
-elsif have_library('oboe', 'oboe_config_get_revision', 'oboe/oboe.h')
+elsif have_library('oboe', 'oboe_config_get_revision', 'oboe.h')
 
   $libs = append_library($libs, 'oboe')
   $libs = append_library($libs, 'stdc++')
@@ -38,11 +36,7 @@ elsif have_library('oboe', 'oboe_config_get_revision', 'oboe/oboe.h')
   $CFLAGS << " #{ENV['CFLAGS']}"
   $CPPFLAGS << " #{ENV['CPPFLAGS']}"
   $LIBS << " #{ENV['LIBS']}"
-
-  # On OpenShift user rpath to point out the TraceView libraries
-  if openshift
-    $LDFLAGS << " #{ENV['LDFLAGS']} -Wl,-rpath=#{tv_lib64},--rpath=#{tv_tlyzer}"
-  end
+  $LDFLAGS << " #{ENV['LDFLAGS']} -Wl,-rpath=#{tv_lib}"
 
   if RUBY_VERSION < '1.9'
     cpp_command('g++')
@@ -58,4 +52,3 @@ else
   $stderr.puts 'Error: Could not find the base liboboe libraries.  No tracing will occur.'
   create_makefile('oboe_noop', 'noop')
 end
-

@@ -1,6 +1,7 @@
 #!/usr/bin/env rake
 
 require 'rubygems'
+require 'fileutils'
 require 'bundler/setup'
 require 'rake/testtask'
 require 'traceview/test'
@@ -21,7 +22,7 @@ Rake::TestTask.new do |t|
   case TraceView::Test.gemfile
   when /delayed_job/
     require 'delayed/tasks'
-    t.test_files = FileList["test/queues/delayed_job*_test.rb"]
+    t.test_files = FileList['test/queues/delayed_job*_test.rb']
   when /rails/
     # Pre-load rails to get the major version number
     require 'rails'
@@ -49,6 +50,35 @@ Rake::TestTask.new do |t|
   end
 end
 
+desc "Update extension source files"
+task :updatesource do
+  swig_version = %x{swig -version} rescue ''
+  if swig_version.scan(/swig version 3.0.8/i).empty?
+    raise "!! Did not find required swig version: #{swig_version.inspect}"
+  end
+  oboe_src_dir = File.expand_path('liboboe', ENV['OBOE_REPO'].to_s)
+  if not File.directory? oboe_src_dir
+    raise "!! Cannot find liboboe under OBOE_REPO: #{ENV['OBOE_REPO'].inspect}"
+  end
+  ext_src_dir = File.expand_path('ext/oboe_metal/src')
+  %w(oboe.h oboe.hpp oboe_debug.h).each do |filename|
+    if filename.eql? 'oboe.hpp'
+      # need to modify the include directive for oboe.h
+      content = File.read(File.join(oboe_src_dir, filename))
+      content.sub!(/#include <oboe\/oboe\.h>/, '#include <oboe.h>')
+      File.open(File.join(ext_src_dir, filename), 'w') {|f| f.puts content}
+    else
+      FileUtils.copy_file(File.join(oboe_src_dir, filename),
+                          File.join(ext_src_dir, filename))
+    end
+  end
+  FileUtils.cd(ext_src_dir) do
+    FileUtils.copy_file(File.join(oboe_src_dir, 'swig', 'oboe.i'), 'oboe.i')
+    system('swig -c++ -ruby -module oboe_metal oboe.i')
+    FileUtils.rm('oboe.i')
+  end
+end
+
 desc "Build the gem's c extension"
 task :compile do
   if !defined?(JRUBY_VERSION)
@@ -56,12 +86,11 @@ task :compile do
 
     pwd     = Dir.pwd
     ext_dir = File.expand_path('ext/oboe_metal')
-    lib_dir = File.expand_path('lib')
     symlink = File.expand_path('lib/oboe_metal.so')
     so_file = File.expand_path('ext/oboe_metal/oboe_metal.so')
 
     Dir.chdir ext_dir
-    cmd = [ Gem.ruby, 'extconf.rb']
+    cmd = [Gem.ruby, 'extconf.rb']
     sh cmd.join(' ')
     sh '/usr/bin/env make'
     File.delete symlink if File.exist? symlink
@@ -85,9 +114,15 @@ task :clean do
   if !defined?(JRUBY_VERSION)
     pwd     = Dir.pwd
     ext_dir = File.expand_path('ext/oboe_metal')
-    symlink = File.expand_path('lib/oboe_metal.so')
+    symlinks = [
+      File.expand_path('lib/oboe_metal.so'),
+      File.expand_path('ext/oboe_metal/lib/liboboe.so'),
+      File.expand_path('ext/oboe_metal/lib/liboboe-1.0.so.1')
+    ]
 
-    File.delete symlink if File.exist? symlink
+    symlinks.each do |symlink|
+      File.delete symlink if File.exist? symlink
+    end
     Dir.chdir ext_dir
     sh '/usr/bin/env make clean'
 
@@ -102,11 +137,17 @@ task :distclean do
   if !defined?(JRUBY_VERSION)
     pwd     = Dir.pwd
     ext_dir = File.expand_path('ext/oboe_metal')
-    symlink = File.expand_path('lib/oboe_metal.so')
     mkmf_log = File.expand_path('ext/oboe_metal/mkmf.log')
+    symlinks = [
+      File.expand_path('lib/oboe_metal.so'),
+      File.expand_path('ext/oboe_metal/lib/liboboe.so'),
+      File.expand_path('ext/oboe_metal/lib/liboboe-1.0.so.1')
+    ]
 
     if File.exist? mkmf_log
-      File.delete symlink if File.exist? symlink
+      symlinks.each do |symlink|
+        File.delete symlink if File.exist? symlink
+      end
       Dir.chdir ext_dir
       sh '/usr/bin/env make distclean'
 

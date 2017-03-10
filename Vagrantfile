@@ -9,10 +9,17 @@
 
 # Your rubygems push credentials, if saved.
 dot_gem_credentials = File.expand_path(ENV['vg_dot_gem_credentials'] || '~/.gem/credentials')
+# Set the path to your local oboe working tree which will be shared with
+# this guest as /oboe.
+oboe_repo_dir = File.expand_path(ENV['vg_oboe_repo_dir'] || '~/gitrepos/oboe')
 
 Vagrant.configure("2") do |config|
 
   config.vm.box = "ubuntu/trusty64"
+
+  if File.directory? oboe_repo_dir
+    config.vm.synced_folder oboe_repo_dir, '/oboe'
+  end
 
   config.vm.provision "shell", privileged: false, inline: <<-SHELL
     # install OS packages
@@ -29,6 +36,14 @@ Vagrant.configure("2") do |config|
     # install rubies to build our gem against
     rbenv install 2.3.1
     rbenv install jruby-9.0.5.0
+
+    # install swig 3.0.8
+    sudo apt-get install -y libpcre3-dev
+    curl -LO http://kent.dl.sourceforge.net/project/swig/swig/swig-3.0.8/swig-3.0.8.tar.gz
+    tar xzf swig-3.0.8.tar.gz
+    pushd swig-3.0.8
+    ./configure && make && sudo make install
+    popd
   SHELL
 
   if File.exist? dot_gem_credentials

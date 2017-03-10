@@ -18,7 +18,7 @@ Gem::Specification.new do |s|
   s.files = `git ls-files`.split("\n")
   s.test_files  = Dir.glob("{test}/**/*.rb")
 
-  s.platform   = defined?(JRUBY_VERSION) ? 'java' : Gem::Platform::RUBY
+  s.platform   = defined?(JRUBY_VERSION) ? 'java' : Gem::Platform::CURRENT
   s.extensions = ['ext/oboe_metal/extconf.rb'] unless defined?(JRUBY_VERSION)
 
   s.add_runtime_dependency('json', '>= 0')
