@@ -148,8 +148,6 @@ module TraceView
         # Return false if no-op mode
         return false unless TraceView.loaded
 
-        return true if ENV.key?('TRACEVIEW_GEM_TEST') && !opts.key?('X-TV-Meta')
-
         # Validation to make Joboe happy.  Assure that we have the KVs and that they
         # are not empty strings.
         opts[:layer]  = nil      if opts[:layer].is_a?(String)      && opts[:layer].empty?
@@ -160,22 +158,11 @@ module TraceView
         opts[:xtrace]     ||= nil
         opts['X-TV-Meta'] ||= nil
 
-        sr_cfg = Java::ComTracelyticsJoboe::LayerUtil.shouldTraceRequest(opts[:layer], { 'X-Trace' => opts[:xtrace], 'X-TV-Meta' => opts['X-TV-Meta'] })
+        url = opts[:URL] || opts[:JobName] || nil
 
-        # Store the returned SampleRateConfig into TraceView::Config
-        if sr_cfg
-          begin
-            TraceView::Config.sample_rate = sr_cfg.sampleRate
-            TraceView::Config.sample_source = sr_cfg.sampleRateSourceValue
-            # If we fail here, we do so quietly.  This was we don't spam logs
-            # on every request
-          end
-        else
-          TraceView.sample_rate = -1
-          TraceView.sample_source = -1
-        end
+        TraceView.context_settings = Java::ComTracelyticsJoboe::LayerUtil.shouldTrace(opts[:layer].to_s, { 'X-Trace' => opts[:xtrace], 'X-TV-Meta' => opts['X-TV-Meta'] }, url)
 
-        sr_cfg ? true : false
+        TV.context_settings.empty? ? false : true
       rescue => e
         TraceView.logger.debug "[traceview/debug] #{e.message}"
         false
@@ -192,9 +179,18 @@ module TraceView
   end
 end
 
+# Make sure that we have a joboe with new app token support
+unless defined?(Java::ComTracelyticsJoboe::LayerUtil) &&
+  Java::ComTracelyticsJoboe::LayerUtil.respond_to?(:shouldTrace)
+  # LoadError will be captured by lib/traceview.rb and
+  # the gem will be put in no-op mode
+  raise LoadError
+end
+
 # Assure that the Joboe Java Agent was loaded via premain
 case Java::ComTracelyticsAgent::Agent.getStatus
   when Java::ComTracelyticsAgent::Agent::AgentStatus::INITIALIZED_SUCCESSFUL
+    TraceView.app_token = Java::ComTracelyticsJoboe::LiboboeUtil.getHostAppToken()
     TraceView.loaded = true
 
   when Java::ComTracelyticsAgent::Agent::AgentStatus::INITIALIZED_FAILED

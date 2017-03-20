@@ -250,13 +250,12 @@ module TraceView
         end
 
         # Validate :sample_rate value
-        unless value.between?(1, 1e6)
+        unless value.between?(-1, 1e6)
           fail 'traceview :sample_rate must be between 1 and 1000000 (1m)'
         end
 
         # Assure value is an integer
         @@config[key.to_sym] = value.to_i
-        TraceView.set_sample_rate(value) if TraceView.loaded
 
       elsif key == :action_blacklist
         TraceView.logger.warn "[traceview/unsupported] :action_blacklist has been deprecated and no longer functions."
@@ -276,14 +275,6 @@ module TraceView
         @@http_clients.each do |i|
           @@config[i][:log_args] = value
         end
-      end
-
-      # Update liboboe if updating :tracing_mode
-      if key == :tracing_mode
-        TraceView.set_tracing_mode(value.to_sym) if TraceView.loaded
-
-        # Make sure that the mode is stored as a symbol
-        @@config[key.to_sym] = value.to_sym
       end
     end
     # rubocop:enable Metrics/AbcSize, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity

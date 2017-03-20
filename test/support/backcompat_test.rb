@@ -30,8 +30,8 @@ describe "BackwardCompatibility" do
     TraceView::Config.sample_rate.must_equal 8e5
 
     Oboe::Config[:tracing_mode] = 'always'
-    Oboe::Config.tracing_mode.must_equal :always
-    TraceView::Config.tracing_mode.must_equal :always
+    Oboe::Config.tracing_mode.must_equal 'always'
+    TraceView::Config.tracing_mode.must_equal 'always'
 
     Oboe::Config[:sample_rate] = @sr
     Oboe::Config[:tracing_mode] = @tm

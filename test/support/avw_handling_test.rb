@@ -30,7 +30,6 @@ class AVWTraceTest  < Minitest::Test
     # Skip under JRuby/Joboe for now. Due to Java instrumentation
     # variation that is being investigated in TVI-2348
     skip if defined?(JRUBY_VERSION)
-    skip
 
     TV::Config[:tracing_mode] = :through
     header('X-TV-Meta', 'abcdefghijklmnopqrstuvwxyz')
@@ -43,7 +42,6 @@ class AVWTraceTest  < Minitest::Test
     # Skip under JRuby/Joboe for now. Due to Java instrumentation
     # variation that is being investigated in TVI-2348
     skip if defined?(JRUBY_VERSION)
-    skip
 
     TV::Config[:tracing_mode] = :always
     header('X-TV-Meta', 'abcdefghijklmnopqrstuvwxyz')
@@ -53,10 +51,10 @@ class AVWTraceTest  < Minitest::Test
   end
 
   def test_avw_collection_with_never
-    # FIXME: We are forced to skp this test because the tracing mode in liboboe
-    # is thread local and the background webapp doesn't play nicely when the
-    # tracing mode is changed in this thread.
-    skip
+    # Skip under JRuby/Joboe for now. Due to Java instrumentation
+    # variation that is being investigated in TVI-2348
+    skip if defined?(JRUBY_VERSION)
+
     TV::Config[:tracing_mode] = :never
     header('X-TV-Meta', 'abcdefghijklmnopqrstuvwxyz')
 

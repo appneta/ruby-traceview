@@ -9,7 +9,9 @@ class TracingModeTest  < Minitest::Test
   end
 
   def test_dont_start_trace_when_through
-    skip
+    # JRuby tracing mode is handled by tracelyticsagent.json
+    # so these tests won't work there.
+    skip if defined?(JRUBY_VERSION)
 
     TraceView::Config[:tracing_mode] = :through
 
@@ -19,8 +21,6 @@ class TracingModeTest  < Minitest::Test
   end
 
   def test_trace_when_always
-    skip
-
     TraceView::Config[:tracing_mode] = :always
 
     TV::API.start_trace(:test_always) do
@@ -29,7 +29,9 @@ class TracingModeTest  < Minitest::Test
   end
 
   def test_dont_trace_when_never
-    skip
+    # JRuby tracing mode is handled by tracelyticsagent.json
+    # so these tests won't work there.
+    skip if defined?(JRUBY_VERSION)
 
     TraceView::Config[:tracing_mode] = :never
 

@@ -139,6 +139,7 @@ task :console => :environment do
   if TV::Test.gemfile?(:delayed_job)
     require './test/servers/delayed_job'
   end
+  ENV['RACK_ENV'] = 'development'
   Pry.start
 end
 

@@ -120,17 +120,9 @@ module TraceView
           log_event(layer, :entry, TraceView::Context.startTrace, opts)
 
         elsif TraceView.sample?(opts.merge(:layer => layer, :xtrace => xtrace))
-          # Probablistic tracing of a subset of requests based off of
-          # sample rate and sample source
-          opts[:SampleRate]        = TraceView.sample_rate
-          opts[:SampleSource]      = TraceView.sample_source
-
-          if TraceView.through? && opts.key?('X-TV-Meta')
-            opts[:TraceOrigin]       = :avw_sampled
-          else
-            opts[:TraceOrigin]       = :always_sampled
-          end
-
+          opts[:_SP]  = TraceView.context_settings
+          opts[:App]  = TraceView.app_token
+          opts[:AApp] = TraceView::Config[:app_token] if TraceView::Config[:app_token]
           log_event(layer, :entry, TraceView::Context.startTrace, opts)
         end
       end
@@ -153,7 +145,13 @@ module TraceView
 
         log_event(layer, :exit, TraceView::Context.createEvent, opts)
         xtrace = TraceView::Context.toString
-        TraceView::Context.clear unless TraceView.has_incoming_context?
+
+        # Conditionally clear tracing context and the context_settings data.
+        unless TraceView.has_incoming_context?
+          TraceView::Context.clear
+          TraceView.context_settings = nil
+        end
+
         xtrace
       end
 
